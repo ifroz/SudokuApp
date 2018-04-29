@@ -6,13 +6,31 @@ import android.support.design.widget.NavigationView
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
+import android.text.InputFilter
+import android.text.InputType
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.EditText
 import android.widget.TableLayout
+import android.widget.TableRow
+import android.widget.TextView
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
+
+
+    val ROW_IDS = arrayOf(
+        R.id.row_0,
+        R.id.row_1,
+        R.id.row_2,
+        R.id.row_3,
+        R.id.row_4,
+        R.id.row_5,
+        R.id.row_6,
+        R.id.row_7,
+        R.id.row_8
+    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,6 +43,17 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         toggle.syncState()
 
         nav_view.setNavigationItemSelectedListener(this)
+
+        for (rowId in ROW_IDS) createRow(findViewById<TableRow>(rowId))
+    }
+
+    fun createRow(tableRow: TableRow) {
+        repeat(9, { i ->
+            val field = EditText(this);
+            field.inputType = InputType.TYPE_CLASS_NUMBER
+            field.filters = arrayOf(InputFilter.LengthFilter(1))
+            tableRow.addView(field)
+        })
     }
 
     override fun onBackPressed() {
