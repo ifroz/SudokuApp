@@ -1,7 +1,6 @@
 package ifroz.sudoku
 
 import android.os.Bundle
-import android.support.design.widget.Snackbar
 import android.support.design.widget.NavigationView
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
@@ -10,16 +9,12 @@ import android.text.InputFilter
 import android.text.InputType
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.EditText
-import android.widget.TableLayout
-import android.widget.TableRow
-import android.widget.TextView
+import android.view.View
+import android.widget.*
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
-
-
     val ROW_IDS = arrayOf(
         R.id.row_0,
         R.id.row_1,
@@ -45,15 +40,50 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         nav_view.setNavigationItemSelectedListener(this)
 
         for (rowId in ROW_IDS) createRow(findViewById<TableRow>(rowId))
+
+        displayPuzzle(Puzzle());
     }
 
     fun createRow(tableRow: TableRow) {
-        repeat(9, { i ->
+        repeat(9, { _ ->
             val field = EditText(this);
             field.inputType = InputType.TYPE_CLASS_NUMBER
             field.filters = arrayOf(InputFilter.LengthFilter(1))
             tableRow.addView(field)
         })
+    }
+
+    fun doIt(v: View) {
+        getMatrix();
+    }
+
+    fun getMatrix():MutableList<MutableList<Int>> {
+        val responses =
+                MutableList(9, { rowIndex ->
+                val row = findViewById<TableRow>(ROW_IDS[rowIndex])
+                    MutableList(9, { colIndex ->
+                    val field = row.getChildAt(colIndex) as EditText
+                    try {
+                        field.text.toString().toInt()
+                    } catch (err: Error) {
+                        0
+                    }
+                })
+            })
+        Toast.makeText(this, "WowW: ${responses[0][5]}", Toast.LENGTH_LONG).show()
+        return responses
+    }
+
+    fun displayPuzzle(puzzleInstance: Puzzle) {
+        val puzzle = puzzleInstance.getSolution();
+        for ((rowIndex, rowId) in ROW_IDS.withIndex()) {
+            val row = findViewById<TableRow>(rowId);
+            var colIndex = 0;
+            while (colIndex < 9) {
+                (row.getChildAt(colIndex) as EditText).setText(puzzle[rowIndex][colIndex].toString());
+                colIndex++;
+            }
+        }
     }
 
     override fun onBackPressed() {
