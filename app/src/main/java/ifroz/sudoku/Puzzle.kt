@@ -1,4 +1,4 @@
-package ifroz.sudoku
+package ifroz.sudoku.app
 
 import java.util.*
 import kotlin.collections.LinkedHashSet
@@ -37,11 +37,13 @@ class Puzzle {
             acc.add(value)
             acc
         });
-        val availableValues = setOf(1,2,3,4,5,6,7,8,9).minus(usedValues);
+        val availableValues:Set<Int> = setOf(1,2,3,4,5,6,7,8,9) - usedValues;
         val column = availableValues.toMutableList().shuffle();
         setColumnAt(0, column.toList(), 1);
 
         // first square
+        val usedValuesInSquare = puzzle.slice(0..3).flatMap { it.slice(0..3) }
+
     }
 
     fun setRowAt(rowIndex: Int, row: MutableList<Int>) {

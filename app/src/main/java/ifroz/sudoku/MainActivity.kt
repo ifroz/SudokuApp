@@ -11,11 +11,12 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.*
+import ifroz.sudoku.app.Puzzle
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
-    val ROW_IDS = arrayOf(
+    val ROW_IDS = listOf(
         R.id.row_0,
         R.id.row_1,
         R.id.row_2,
