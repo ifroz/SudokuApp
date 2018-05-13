@@ -13,10 +13,9 @@ class PuzzleGenerator {
     @Test
     fun puzzle_hasNoZeros() {
         val puzzle = Puzzle()
-        for (row in puzzle.getSolution()) {
+        for (row in puzzle.toMutableList()) {
             for (item in row) {
-                assert(item > 0)
-                assert(item <= 9)
+                assert(item in 1..9)
             }
         }
     }

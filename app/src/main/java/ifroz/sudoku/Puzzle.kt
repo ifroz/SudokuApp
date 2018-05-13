@@ -1,7 +1,6 @@
 package ifroz.sudoku.app
 
 import java.util.*
-import kotlin.collections.LinkedHashSet
 
 fun <T> MutableList<T>.shuffle(): MutableList<T> {
     val rng = Random()
@@ -18,51 +17,53 @@ fun <T> MutableList<T>.shuffle(): MutableList<T> {
     return this
 }
 
+fun <E> Set<E>.takeOneRandomly(): E {
+    if (size == 0)
+        throw Error("Cannot take random element of an empty set.")
+    return toMutableList().shuffle()[0];
+}
+
 class Puzzle {
-    var puzzle:MutableList<MutableList<Int>>
+    var puzzleRows:MutableList<MutableList<Int>> =
+            MutableList(9, { _ -> MutableList(9, { 0 }) })
 
     constructor() {
-        puzzle = MutableList(9, { _ -> MutableList(9, { 0 }) });
-        generatePuzzle();
+        generatePuzzle()
     }
 
-    fun generatePuzzle(currentIndex:Int = 0) {
-        // first row
-        val row = mutableListOf(1,2,3,4,5,6,7,8,9).shuffle()
-        setRowAt(0, row);
-
-        // first column
-        var idx = 0;
-        val usedValues: Set<Int> = row.slice(0..currentIndex).fold(LinkedHashSet(), { acc, value ->
-            acc.add(value)
-            acc
-        });
-        val availableValues:Set<Int> = setOf(1,2,3,4,5,6,7,8,9) - usedValues;
-        val column = availableValues.toMutableList().shuffle();
-        setColumnAt(0, column.toList(), 1);
-
-        // first square
-        val usedValuesInSquare = puzzle.slice(0..3).flatMap { it.slice(0..3) }
-
-    }
-
-    fun setRowAt(rowIndex: Int, row: MutableList<Int>) {
-        puzzle[rowIndex] = row;
-    }
-
-    fun setColumnAt(colIndex: Int, column: List<Int>, startAtRowIndex:Int = 0) {
-        var rowIndex = 0;
-        while (rowIndex <= column.lastIndex) {
-            puzzle[rowIndex + startAtRowIndex][colIndex] = column[rowIndex];
-            rowIndex++;
+    private fun generatePuzzle() {
+        for (topIndex in 0..4) {
+            for (leftIndex in 0..8) {
+                generateValueAt(topIndex, leftIndex)
+            }
         }
     }
 
-    fun getColumnAt(colIndex: Int):List<Int> {
-        return List(9, { index: Int -> puzzle[index][colIndex] })
+    fun generateValueAt(topIndex: Int, leftIndex: Int) {
+        val usedValues = getUsedValuesAt(topIndex, leftIndex)
+        val possibleValues = setOf(1,2,3,4,5,6,7,8,9) - usedValues
+        puzzleRows[topIndex][leftIndex] = possibleValues.takeOneRandomly()
     }
 
-    fun getSolution():MutableList<MutableList<Int>> {
-        return puzzle;
+    fun getUsedValuesAt(topIndex: Int, leftIndex: Int):Set<Int> {
+        val rowValues = puzzleRows[topIndex].toSet()
+        val colValues = puzzleRows.map({ it[leftIndex] }).toSet()
+        val squareValues = getRectangleValuesAt(topIndex, leftIndex)
+        return (rowValues + colValues + squareValues) - setOf(0)
+    }
+
+    fun getRectangleValuesAt(topIndex: Int, leftIndex: Int):Set<Int> {
+        val topRange = (topIndex / 3 * 3)..(topIndex / 3 * 3 + 2)
+        val leftRange = (leftIndex / 3 * 3)..(leftIndex / 3 * 3 + 2)
+        val valuesInRectangle = puzzleRows.slice(topRange).flatMap { it.slice(leftRange) }.toSet()
+        return valuesInRectangle;
+    }
+
+    fun toMutableList():MutableList<MutableList<Int>> {
+        return puzzleRows;
+    }
+
+    override fun toString():String {
+        return puzzleRows.fold("", { acc, row -> "$acc${row.joinToString("")}\n" })
     }
 }

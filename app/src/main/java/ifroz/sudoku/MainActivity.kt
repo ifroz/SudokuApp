@@ -76,7 +76,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     fun displayPuzzle(puzzleInstance: Puzzle) {
-        val puzzle = puzzleInstance.getSolution();
+        val puzzle = puzzleInstance.toMutableList();
         for ((rowIndex, rowId) in ROW_IDS.withIndex()) {
             val row = findViewById<TableRow>(rowId);
             var colIndex = 0;
