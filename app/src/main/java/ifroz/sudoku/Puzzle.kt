@@ -36,9 +36,7 @@ class Puzzle {
                 MutableList(9, { MutableList(9, { mutableSetOf<Int>() })})
 
         var fieldIndex = 0;
-        var iterationCount = 500000;
-        while (iterationCount > 0 && fieldIndex < 9 * 9) {
-            iterationCount--;
+        while (fieldIndex < 9 * 9) {
 
             val topIndex: Int = fieldIndex / 9;
             val leftIndex: Int = fieldIndex % 9;
