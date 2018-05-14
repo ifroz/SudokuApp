@@ -59,9 +59,6 @@ class Puzzle {
         val possibilities = possibleValuesAt(topIndex, leftIndex) - restrictions
         if (possibilities.isEmpty()) return 0
         else return possibilities.takeOneRandomly()
-
-        123456789
-        4561237
     }
 
     fun possibleValuesAt(topIndex: Int, leftIndex: Int):Set<Int> =
