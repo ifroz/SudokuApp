@@ -25,31 +25,55 @@ fun <E> Set<E>.takeOneRandomly(): E {
 
 class Puzzle {
     var puzzleRows:MutableList<MutableList<Int>> =
-            MutableList(9, { _ -> MutableList(9, { 0 }) })
+            MutableList(9, { MutableList(9, { 0 }) })
 
     constructor() {
         generatePuzzle()
     }
 
     private fun generatePuzzle() {
-        for (topIndex in 0..4) {
-            for (leftIndex in 0..8) {
-                generateValueAt(topIndex, leftIndex)
+        val valueRestrictions: MutableList<MutableList<MutableSet<Int>>> =
+                MutableList(9, { MutableList(9, { mutableSetOf<Int>() })})
+
+        var fieldIndex = 0;
+        var iterationCount = 500000;
+        while (iterationCount > 0 && fieldIndex < 9 * 9) {
+            iterationCount--;
+
+            val topIndex: Int = fieldIndex / 9;
+            val leftIndex: Int = fieldIndex % 9;
+            puzzleRows[topIndex][leftIndex] = 0;
+            val choice = generateValueAt(topIndex, leftIndex, valueRestrictions[topIndex][leftIndex]);
+            if (choice > 0) {
+                puzzleRows[topIndex][leftIndex] = choice
+                valueRestrictions[topIndex][leftIndex].add(choice)
+                fieldIndex++;
+            } else {
+                if (fieldIndex == 0)
+                    throw Error("Failing on first field: ${valueRestrictions[topIndex][leftIndex].sorted()}")
+                valueRestrictions[topIndex][leftIndex].clear();
+                fieldIndex--;
             }
         }
     }
 
-    fun generateValueAt(topIndex: Int, leftIndex: Int) {
-        val usedValues = getUsedValuesAt(topIndex, leftIndex)
-        val possibleValues = setOf(1,2,3,4,5,6,7,8,9) - usedValues
-        puzzleRows[topIndex][leftIndex] = possibleValues.takeOneRandomly()
+    fun generateValueAt(topIndex: Int, leftIndex: Int, restrictions:Set<Int> = setOf()):Int {
+        val possibilities = possibleValuesAt(topIndex, leftIndex) - restrictions
+        if (possibilities.isEmpty()) return 0
+        else return possibilities.takeOneRandomly()
+
+        123456789
+        4561237
     }
+
+    fun possibleValuesAt(topIndex: Int, leftIndex: Int):Set<Int> =
+            (setOf(1,2,3,4,5,6,7,8,9) - getUsedValuesAt(topIndex, leftIndex))
 
     fun getUsedValuesAt(topIndex: Int, leftIndex: Int):Set<Int> {
         val rowValues = puzzleRows[topIndex].toSet()
         val colValues = puzzleRows.map({ it[leftIndex] }).toSet()
         val squareValues = getRectangleValuesAt(topIndex, leftIndex)
-        return (rowValues + colValues + squareValues) - setOf(0)
+        return (rowValues + colValues + squareValues) - setOf(0, puzzleRows[topIndex][leftIndex])
     }
 
     fun getRectangleValuesAt(topIndex: Int, leftIndex: Int):Set<Int> {

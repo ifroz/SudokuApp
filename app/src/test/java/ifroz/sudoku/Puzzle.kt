@@ -13,10 +13,14 @@ class PuzzleGenerator {
     @Test
     fun puzzle_hasNoZeros() {
         val puzzle = Puzzle()
-        for (row in puzzle.toMutableList()) {
-            for (item in row) {
-                assert(item in 1..9)
+        try {
+            for (row in puzzle.toMutableList()) {
+                for (item in row) {
+                    assert(item in 1..9)
+                }
             }
+        } catch (err: Error) {
+            throw Error("Sudoku containing zeros: \n$puzzle")
         }
     }
 }
